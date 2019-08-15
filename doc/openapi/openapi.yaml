@@ -5,7 +5,7 @@ info:
   version: v1.0.0
 
 paths:
-  '/api/heros':
+  /api/heros/:
     description: hero list
     get:
       tags:
@@ -14,7 +14,7 @@ paths:
         '200':
           $ref: '#/components/responses/HeroList'
 
-  /api/heros/{hero_id}:
+  /api/heros/{hero_id}/:
     parameters:
       - $ref: '#/components/parameters/HeroID'
     get:
@@ -27,7 +27,7 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
-  '/api/heros/{hero_id}/abilities':
+  '/api/heros/{hero_id}/abilities/':
     description: Abilities for a hero
     parameters:
       - $ref: '#/components/parameters/HeroID'
@@ -49,7 +49,7 @@ paths:
         '200':
           $ref: '#/components/responses/AbilityList'
 
-  '/api/abilities/{ability_id}':
+  '/api/abilities/{ability_id}/':
     description: Abilities for a hero
     parameters:
       - $ref: '#/components/parameters/AbilityID'
