@@ -9,5 +9,5 @@ type Hero struct {
 	Armour   int    `json:"armour"`
 	Shield   int    `json:"shield"`
 
-	Abilities []*Ability `json:"abilities"`
+	Abilities []*Ability `json:"abilities,omitempty"`
 }

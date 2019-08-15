@@ -3,6 +3,8 @@ package search
 import (
 	"net/http"
 
+	"service/store"
+
 	"go.uber.org/zap"
 )
 
@@ -15,6 +17,8 @@ var (
 // database store clients, cache clients, or loggers.
 type Endpoint struct {
 	Logger *zap.Logger
+
+	Provider store.Provider
 }
 
 // ServeHTTP for the ability searcher endpoint.

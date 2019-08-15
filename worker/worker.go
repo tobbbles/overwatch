@@ -56,9 +56,11 @@ func New(config *Config) (*Controller, error) {
 func (c *Controller) start() {
 	// Intial tick
 	c.tick()
+	c.logger.Info("complete inital fetch of remote overwatch api data")
 
 	// Begin ticker
 	for range c.ticker.C {
+		c.logger.Info("begining refresh of remote overwatch api data")
 		c.tick()
 	}
 }
@@ -71,8 +73,6 @@ func (c *Controller) tick() {
 		return
 	}
 
-	log.Printf("count: %d\n", count)
-
 	// Iterate through the hero IDs
 	for i := 1; i < count; i++ {
 		hero, err := c.client.Hero(i)
@@ -81,8 +81,7 @@ func (c *Controller) tick() {
 			return
 		}
 
-		// TODO: Insert hero and it's abilities
-		c.logger.Info("updating updater with hero")
+		// Update the store via the updater
 		if err := c.updater.Update(hero); err != nil {
 			c.errors <- err
 			continue

@@ -36,9 +36,10 @@ func main() {
 		logger.Fatal("faied created sqlite store", zap.Error(err))
 	}
 
+	// Configure our worker
 	c := &worker.Config{
 		Client:   owc,
-		Interval: 5 * time.Second,
+		Interval: time.Duration(env.Interval) * time.Second,
 		Logger:   logger,
 		Updater:  store,
 	}
@@ -55,10 +56,11 @@ func main() {
 		}
 	}()
 
-	// Configure and setup the HTTP server with it's endpoints.
+	// Configure and setup the HTTP server with it's dependencies
 	config := &server.Config{
-		Addr:   env.Address,
-		Logger: logger,
+		Provider: store,
+		Addr:     env.Address,
+		Logger:   logger,
 	}
 
 	s, err := server.New(config)

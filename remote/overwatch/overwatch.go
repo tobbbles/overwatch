@@ -2,7 +2,7 @@ package overwatch
 
 import (
 	"encoding/json"
-	"log"
+	"errors"
 	"net/http"
 )
 
@@ -31,10 +31,20 @@ func (c *Client) do(req *http.Request, v interface{}) error {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		log.Println(req.URL.String())
-		panic(resp.StatusCode)
+		return formatResponseError(resp.StatusCode)
 	}
 
 	defer resp.Body.Close()
 	return json.NewDecoder(resp.Body).Decode(&v)
+}
+
+func formatResponseError(code int) error {
+	switch code {
+	case http.StatusNotFound:
+		return errors.New("404 not found")
+	case http.StatusTooManyRequests:
+		return errors.New("429 too many requests, please slow down")
+	default:
+		return errors.New("received non-200 request from overwatch-api")
+	}
 }

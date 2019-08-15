@@ -2,7 +2,7 @@ package sqlite
 
 import (
 	"errors"
-	"fmt"
+
 	"service/models"
 )
 
@@ -17,8 +17,6 @@ func (s *Store) Update(hero *models.Hero) error {
 	if len(hero.Abilities) == 0 {
 		return ErrMissingAbilities
 	}
-
-	fmt.Printf("%+v\n", hero)
 
 	// Upser the hero
 	if err := s.hero(hero); err != nil {
@@ -58,8 +56,6 @@ func (s *Store) abilities(hero *models.Hero) error {
 
 	// Recurse over abilities and upsert them into the store
 	for _, ab := range hero.Abilities {
-		fmt.Printf("%+v\n", ab)
-
 		stmt, err := tx.Prepare(AbilityUpsertQuery)
 		if err != nil {
 			return err

@@ -1,7 +1,7 @@
 package sqlite
 
 const (
-	UpHeros = `CREATE TABLE heros (
+	UpHeros = `CREATE TABLE IF NOT EXISTS heros  (
 	id INT NOT NULL PRIMARY KEY,
 	name VARCHAR(255) NOT NULL,
 	real_name VARCHAR(255),
@@ -10,7 +10,7 @@ const (
 	shield INT
 	);`
 
-	UpAbilities = `CREATE TABLE abilities (
+	UpAbilities = `CREATE TABLE IF NOT EXISTS abilities (
 	id INT NOT NULL PRIMARY KEY,
 	name VARCHAR(255) NOT NULL,
 	description VARCHAR(3000) NOT NULL,

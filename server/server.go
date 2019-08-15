@@ -1,11 +1,13 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
 	"service/server/middleware/json"
 	"service/server/middleware/path"
+	"service/store"
 
 	abilitieslist "service/server/endpoints/abilities/list"
 	abilitiessearch "service/server/endpoints/abilities/search"
@@ -21,24 +23,37 @@ import (
 type Config struct {
 	Addr string
 
-	Logger *zap.Logger
+	Logger   *zap.Logger
+	Provider store.Provider
 }
 
 // Server harbours all dependencies and service used in serving requests.
 type Server struct {
 	addr string
 
-	r      *mux.Router
-	logger *zap.Logger
+	r        *mux.Router
+	logger   *zap.Logger
+	provider store.Provider
 }
 
 // New creates a configured Server with the passed endpoints.
 func New(config *Config) (*Server, error) {
+	if config.Provider == nil {
+		return nil, fmt.Errorf("%T.Provider must not be nil", config)
+	}
+	if config.Logger == nil {
+		return nil, fmt.Errorf("%T.Logger must not be nil", config)
+	}
+	if len(config.Addr) == 0 {
+		return nil, fmt.Errorf("%T.Addr must not be empty", config)
+	}
+
 	s := &Server{
 		addr: config.Addr,
 		r:    mux.NewRouter(),
 
-		logger: config.Logger,
+		logger:   config.Logger,
+		provider: config.Provider,
 	}
 
 	// Assign the middlewares.
@@ -62,11 +77,11 @@ func New(config *Config) (*Server, error) {
 // endpoints instantiates our collection of endpoints
 func (s *Server) endpoints() []Endpoint {
 	return []Endpoint{
-		&abilitieslist.Endpoint{Logger: s.logger},
-		&abilitiessearch.Endpoint{Logger: s.logger},
-		&herosabilities.Endpoint{Logger: s.logger},
-		&herossearch.Endpoint{Logger: s.logger},
-		&heroslist.Endpoint{Logger: s.logger},
+		&abilitieslist.Endpoint{Logger: s.logger, Provider: s.provider},
+		&abilitiessearch.Endpoint{Logger: s.logger, Provider: s.provider},
+		&herosabilities.Endpoint{Logger: s.logger, Provider: s.provider},
+		&herossearch.Endpoint{Logger: s.logger, Provider: s.provider},
+		&heroslist.Endpoint{Logger: s.logger, Provider: s.provider},
 	}
 }
 
