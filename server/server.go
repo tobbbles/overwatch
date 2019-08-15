@@ -5,6 +5,13 @@ import (
 	"time"
 
 	"service/server/middleware/json"
+	"service/server/middleware/path"
+
+	abilitieslist "service/server/endpoints/abilities/list"
+	abilitiessearch "service/server/endpoints/abilities/search"
+	herosabilities "service/server/endpoints/heros/abilities"
+	heroslist "service/server/endpoints/heros/list"
+	herossearch "service/server/endpoints/heros/search"
 
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"
@@ -26,7 +33,7 @@ type Server struct {
 }
 
 // New creates a configured Server with the passed endpoints.
-func New(config *Config, endpoints ...Endpoint) (*Server, error) {
+func New(config *Config) (*Server, error) {
 	s := &Server{
 		addr: config.Addr,
 		r:    mux.NewRouter(),
@@ -35,15 +42,32 @@ func New(config *Config, endpoints ...Endpoint) (*Server, error) {
 	}
 
 	// Assign the middlewares.
-	s.r.Use(json.Middleware(s.logger))
-	s.r.Use(mux.CORSMethodMiddleware(s.r))
+	s.r.Use(
+		path.Middleware(s.logger),
+		json.Middleware(s.logger),
+		mux.CORSMethodMiddleware(s.r),
+	)
 
-	// Attach the endpoints.
-	for _, endpoint := range endpoints {
+	// Set strict trailing slash
+	s.r.StrictSlash(true)
+
+	// Unfurl our endpoint collections and attach them to the router
+	for _, endpoint := range s.endpoints() {
 		s.r.Handle(endpoint.Path(), endpoint).Methods(endpoint.Methods()...)
 	}
 
 	return s, nil
+}
+
+// endpoints instantiates our collection of endpoints
+func (s *Server) endpoints() []Endpoint {
+	return []Endpoint{
+		&abilitieslist.Endpoint{Logger: s.logger},
+		&abilitiessearch.Endpoint{Logger: s.logger},
+		&herosabilities.Endpoint{Logger: s.logger},
+		&herossearch.Endpoint{Logger: s.logger},
+		&heroslist.Endpoint{Logger: s.logger},
+	}
 }
 
 // Start serving the server with responsible defaults.

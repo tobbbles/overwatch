@@ -1,6 +1,10 @@
 package search
 
-import "net/http"
+import (
+	"go.uber.org/zap"
+	"net/http"
+	"service/server/context/id/ability"
+)
 
 var (
 	Path    = "/api/abilities/{ability_id}/"
@@ -9,12 +13,20 @@ var (
 
 // Endpoint ought to contain any dependencies used by the endpoint, such as
 // database store clients, cache clients, or loggers.
-type Endpoint struct{}
+type Endpoint struct {
+	Logger *zap.Logger
+}
 
+// ServeHTTP for the ability searcher endpoint.
 func (e *Endpoint) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	response := []byte(`{"status": "ok"}`)
+	id, err := ability.FromContext(r.Context())
+	if err != nil {
+		panic(err)
+	}
 
-	w.Write(response)
+	// TODO: Make a database/cache request for the given Ability ID
+
+	w.WriteHeader(http.StatusNotImplemented)
 }
 
 func (e *Endpoint) Path() string {

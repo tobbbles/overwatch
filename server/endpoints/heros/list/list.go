@@ -1,20 +1,25 @@
-package abilities
+package list
 
-import "net/http"
+import (
+	"net/http"
+
+	"go.uber.org/zap"
+)
 
 var (
-	Path    = "/api/hero/{hero_id}/abilities/"
+	Path    = "/api/heros/"
 	Methods = []string{"GET"}
 )
 
 // Endpoint ought to contain any dependencies used by the endpoint, such as
 // database store clients, cache clients, or loggers.
-type Endpoint struct{}
+type Endpoint struct {
+	Logger *zap.Logger
+}
 
 func (e *Endpoint) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	response := []byte(`{"status": "ok"}`)
 
-	w.Write(response)
+	w.WriteHeader(http.StatusNotImplemented)
 }
 
 func (e *Endpoint) Path() string {

@@ -2,12 +2,9 @@ package main
 
 import (
 	"fmt"
-
+	"go.uber.org/zap"
 	"service/environment"
 	"service/server"
-	"service/server/endpoints/index"
-
-	"go.uber.org/zap"
 )
 
 func main() {
@@ -29,10 +26,7 @@ func main() {
 		Logger: logger,
 	}
 
-	s, err := server.New(
-		config,
-		&index.Endpoint{},
-	)
+	s, err := server.New(config)
 
 	if err != nil {
 		logger.Fatal("failed creating server", zap.Error(err))
