@@ -1,0 +1,203 @@
+openapi: "3.0.0"
+info:
+  title: overwatch
+  description: API to serve information about Overwatch heroes and their abilities
+  version: v1.0.0
+
+paths:
+  '/api/heros':
+    description: hero list
+    get:
+      tags:
+        - Hero
+      responses:
+        '200':
+          $ref: '#/components/responses/HeroList'
+
+  /api/heros/{hero_id}:
+    parameters:
+      - $ref: '#/components/parameters/HeroID'
+    get:
+      tags:
+        - Hero
+      description: Hero information
+      responses:
+        '200':
+          $ref: '#/components/responses/Hero'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  '/api/heros/{hero_id}/abilities':
+    description: Abilities for a hero
+    parameters:
+      - $ref: '#/components/parameters/HeroID'
+    get:
+      tags:
+        - Hero
+      responses:
+        '200':
+          $ref: '#/components/responses/AbilityList'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  '/api/abilities/':
+    description: Ability list
+    get:
+      tags:
+        - Abiilities
+      responses:
+        '200':
+          $ref: '#/components/responses/AbilityList'
+
+  '/api/abilities/{ability_id}':
+    description: Abilities for a hero
+    parameters:
+      - $ref: '#/components/parameters/AbilityID'
+    get:
+      tags:
+        - Abiilities
+      responses:
+        '200':
+          $ref: '#/components/responses/Ability'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  parameters:
+    HeroID:
+      in: path
+      name: hero_id
+      schema:
+        type: integer
+      required: true
+      description: Hero ID
+    AbilityID:
+      in: path
+      name: ability_id
+      schema:
+        type: integer
+      required: true
+      description: Ability ID
+
+  responses:
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              code:
+                type: string
+              message:
+                type: string
+          example: {"code": "404", "message": "resource not found"}
+
+    Hero:
+      description: Hero object
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Hero'
+          example:
+            {
+              "id": 2,
+              "name": "Bastion",
+              "health": 200,
+              "armour": 100,
+              "shield": 0,
+            }
+
+    HeroList:
+      description: List of heroes
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Hero'
+          example:
+            [
+            {
+              "id": 2,
+              "name": "Bastion",
+              "health": 200,
+              "armour": 100,
+              "shield": 0,
+            },
+            {
+              "id": 15,
+              "name": "Soldier: 76",
+              "health": 200,
+              "armour": 0,
+              "shield": 0,
+            }
+            ]
+    Ability:
+      description: Ability object
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Ability'
+          example:
+            {
+              "id": 10,
+              "name": "Fusion Cannons",
+              "description": "D.Va's mech is equipped with twin short-range rotating cannons. They lay down continuous, high-damage fire without needing to reload, but slow D.Va\u2019s movement while they\u2019re active.",
+              "is_ultimate": false,
+            }
+
+    AbilityList:
+      description: List of abilitties
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/Ability'
+          example:
+            [
+            {
+              "id": 10,
+              "name": "Fusion Cannons",
+              "description": "D.Va's mech is equipped with twin short-range rotating cannons. They lay down continuous, high-damage fire without needing to reload, but slow D.Va\u2019s movement while they\u2019re active.",
+              "is_ultimate": false,
+            },
+            {
+              "id": 13,
+              "name": "Eject",
+              "description": "D.Va ejects out of her mech when it is destroyed.",
+              "is_ultimate": false,
+            }
+            ]
+
+  schemas:
+    Hero:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID of the hero.
+        name:
+          type: string
+        real_name:
+          type: string
+        health:
+          type: integer
+        armour:
+          type: integer
+        shield:
+          type: integer
+
+    Ability:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID of the ability.
+        name:
+          type: string
+        description:
+          type: string
+        isUltimate:
+          type: boolean
