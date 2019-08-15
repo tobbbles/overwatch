@@ -6,6 +6,7 @@ import (
 	"service/environment"
 	"service/remote/overwatch"
 	"service/server"
+	"service/store/sqlite"
 	"service/worker"
 	"time"
 )
@@ -29,8 +30,20 @@ func main() {
 		logger.Fatal("failed creating overwatch api client", zap.Error(err))
 	}
 
+	// Create our sttore
+	store, err := sqlite.New(env.SQLitePath)
+	if err != nil {
+		logger.Fatal("faied created sqlite store", zap.Error(err))
+	}
+
+	c := &worker.Config{
+		Client:   owc,
+		Interval: 5 * time.Second,
+		Logger:   logger,
+		Updater:  store,
+	}
 	// Setup and start our remote api worker
-	controller, err := worker.New(owc, 5*time.Second)
+	controller, err := worker.New(c)
 	if err != nil {
 		logger.Fatal("failed creating overwatch api client worker controller", zap.Error(err))
 	}
@@ -49,7 +62,6 @@ func main() {
 	}
 
 	s, err := server.New(config)
-
 	if err != nil {
 		logger.Fatal("failed creating server", zap.Error(err))
 	}

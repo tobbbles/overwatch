@@ -1,6 +1,6 @@
 package models
 
-// Hero describes the characteristics of an Overwatch Hero
+// Update describes the characteristics of an Overwatch Update
 type Hero struct {
 	ID       int    `json:"id"`
 	Name     string `json:"name"`

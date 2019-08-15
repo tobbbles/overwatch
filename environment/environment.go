@@ -9,6 +9,8 @@ import (
 type Config struct {
 	// Address is an optional configuration to change the bind address
 	Address string `env:"ADDR" default:":3000"`
+
+	SQLitePath string `env:"SQLITE_PATH" default:"./overwatch.db"`
 }
 
 // Load environment variables into the config.

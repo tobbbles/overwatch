@@ -2,23 +2,52 @@ package worker
 
 import (
 	"fmt"
+	"go.uber.org/zap"
 	"log"
 	"service/remote/overwatch"
+	"service/store"
 	"time"
 )
 
 type Controller struct {
-	ticker *time.Ticker
-	client *overwatch.Client
+	ticker  *time.Ticker
+	client  *overwatch.Client
+	updater store.Updater
+	logger  *zap.Logger
 
-	quit chan error
+	errors chan error
+	quit   chan struct{}
 }
 
-func New(client *overwatch.Client, interval time.Duration) (*Controller, error) {
+// Config used to instantiate the Controller
+type Config struct {
+	Client   *overwatch.Client
+	Interval time.Duration
+	Logger   *zap.Logger
+	Updater  store.Updater
+}
+
+// New takes an Overwatch client and an Updater - it'll update the store with data from the overwatch client
+// at an interval specified.
+func New(config *Config) (*Controller, error) {
+	if config.Client == nil {
+		return nil, fmt.Errorf("%T.Client can not be nil when creating a new controller", config)
+	}
+	if config.Updater == nil {
+		return nil, fmt.Errorf("%T.Updater can not be nil when creating a new controller", config)
+	}
+	if config.Interval == 0 {
+		return nil, fmt.Errorf("%T.Interval can not be zero when creating a new controller", config)
+	}
 
 	controller := &Controller{
-		ticker: time.NewTicker(interval),
-		client: client,
+		ticker:  time.NewTicker(config.Interval),
+		client:  config.Client,
+		updater: config.Updater,
+		logger:  config.Logger,
+
+		quit:   make(chan struct{}),
+		errors: make(chan error, 8),
 	}
 
 	return controller, nil
@@ -29,10 +58,9 @@ func (c *Controller) start() {
 
 		count, err := c.client.HeroCount()
 		if err != nil {
-			c.quit <- err
+			c.errors <- err
 			return
 		}
-
 
 		log.Printf("count: %d\n", count)
 
@@ -40,12 +68,16 @@ func (c *Controller) start() {
 		for i := 1; i < count; i++ {
 			hero, err := c.client.Hero(i)
 			if err != nil {
-				c.quit <- err
+				c.errors <- err
 				return
 			}
 
 			// TODO: Insert hero and it's abilities
-			fmt.Printf("%+v\n", hero)
+			c.logger.Info("updating updater with hero")
+			if err := c.updater.Update(hero); err != nil {
+				c.errors <- err
+				continue
+			}
 		}
 	}
 }
@@ -57,8 +89,13 @@ func (c *Controller) Start() error {
 
 	go c.start()
 
-	select {
-	case err := <-c.quit:
-		return err
+	for {
+		select {
+		case err := <-c.errors:
+			c.logger.Error("error from worker controller", zap.Error(err))
+
+		case <-c.quit:
+			return nil
+		}
 	}
 }

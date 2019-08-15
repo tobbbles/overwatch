@@ -7,7 +7,7 @@ import (
 	"service/models"
 )
 
-// Hero returns information for the given id.
+// Update returns information for the given id.
 func (c *Client) Hero(id int) (*models.Hero, error) {
 	var (
 		uri = fmt.Sprintf("%s/hero/%d/", baseURI, id)
