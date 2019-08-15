@@ -3,6 +3,19 @@
 A simple Golang REST API that consume a third-party resource, persists it's data into our own datastore, and serves it
 through a RESTful API.
 
+Currently the service uses SQLite3 for demonstration purposes.
+
+
+## Running
+
+### Configuring
+
+The service is configured via three enviornment variables:
+
+- `ADDR` - The Address the service will run on (defaults to `localhost:3000`.)
+- `SQLITE_PATH` - The full path to where the SQLite3 file will be (default to `./overwatch.db`.)
+- `INTERVAL` - The interval in minutes to fetch data from the Overwatch API (defaults to 30 minutes.)
+
 
 
 ## Development
