@@ -54,30 +54,38 @@ func New(config *Config) (*Controller, error) {
 }
 
 func (c *Controller) start() {
-	for range c.ticker.C {
+	// Intial tick
+	c.tick()
 
-		count, err := c.client.HeroCount()
+	// Begin ticker
+	for range c.ticker.C {
+		c.tick()
+	}
+}
+
+// Tick is called on every iteration of the ticker
+func (c *Controller) tick() {
+	count, err := c.client.HeroCount()
+	if err != nil {
+		c.errors <- err
+		return
+	}
+
+	log.Printf("count: %d\n", count)
+
+	// Iterate through the hero IDs
+	for i := 1; i < count; i++ {
+		hero, err := c.client.Hero(i)
 		if err != nil {
 			c.errors <- err
 			return
 		}
 
-		log.Printf("count: %d\n", count)
-
-		// Iterate through the hero IDs
-		for i := 1; i < count; i++ {
-			hero, err := c.client.Hero(i)
-			if err != nil {
-				c.errors <- err
-				return
-			}
-
-			// TODO: Insert hero and it's abilities
-			c.logger.Info("updating updater with hero")
-			if err := c.updater.Update(hero); err != nil {
-				c.errors <- err
-				continue
-			}
+		// TODO: Insert hero and it's abilities
+		c.logger.Info("updating updater with hero")
+		if err := c.updater.Update(hero); err != nil {
+			c.errors <- err
+			continue
 		}
 	}
 }
