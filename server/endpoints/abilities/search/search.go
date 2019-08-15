@@ -1,9 +1,9 @@
 package search
 
 import (
-	"go.uber.org/zap"
 	"net/http"
-	"service/server/context/id/ability"
+
+	"go.uber.org/zap"
 )
 
 var (
@@ -19,10 +19,10 @@ type Endpoint struct {
 
 // ServeHTTP for the ability searcher endpoint.
 func (e *Endpoint) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	id, err := ability.FromContext(r.Context())
-	if err != nil {
-		panic(err)
-	}
+	//id, err := ability.FromContext(r.Context())
+	//if err != nil {
+	//	panic(err)
+	//}
 
 	// TODO: Make a database/cache request for the given Ability ID
 
