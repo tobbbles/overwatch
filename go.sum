@@ -2,6 +2,8 @@ github.com/codingconcepts/env v0.0.0-20190614135724-bb4545dff6a4 h1:gJhrSCObRkIC
 github.com/codingconcepts/env v0.0.0-20190614135724-bb4545dff6a4/go.mod h1:TM9ug+H/2cI3EjyIDr5xKCkFGyNE59URgH1wu5NyU8E=
 github.com/gorilla/mux v1.7.3 h1:gnP5JzjVOuiZD07fKKToCAOjS0yOpj/qPETTXCCS6hw=
 github.com/gorilla/mux v1.7.3/go.mod h1:1lud6UwP+6orDFRuTfBEV8e9/aOM/c4fVVCaMa2zaAs=
+github.com/rs/cors v1.7.0 h1:+88SsELBHx5r+hZ8TCkggzSstaWNbDvThkVK8H6f9ik=
+github.com/rs/cors v1.7.0/go.mod h1:gFx+x8UowdsKA9AchylcLynDq+nNFfI8FkUZdN/jGCU=
 github.com/uber-go/zap v1.10.0 h1:4pFX6Frb+nVIH8QS73XEiyPcKrJ/C25Z2xpudBIlOnE=
 github.com/uber-go/zap v1.10.0/go.mod h1:GY+83l3yxBcBw2kmHu/sAWwItnTn+ynxHCRo+WiIQOY=
 go.uber.org/atomic v1.4.0 h1:cxzIVoETapQEqDhQu3QfnvXAV4AlzcvUCxkVUFw3+EU=
